@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import path from 'path';
 
 const execFileAsync = promisify(execFile);
-const YTDLP = '/home/dandadan/.local/bin/yt-dlp';
+
+// Use YTDLP_PATH env var (local dev pointing to system install),
+// otherwise fall back to the binary downloaded into ./bin/ at build time (Vercel).
+const YTDLP =
+    process.env.YTDLP_PATH ||
+    path.join(process.cwd(), 'bin', 'yt-dlp');
 
 export async function GET(req: NextRequest) {
     const url = req.nextUrl.searchParams.get('url');

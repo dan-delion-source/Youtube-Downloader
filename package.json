@@ -1,15 +1,15 @@
 {
   "name": "mediahub",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/setup-ytdlp.js && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "15.1.7",
+    "next": "latest",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "framer-motion": "^12.4.7",
@@ -21,7 +21,7 @@
     "@types/react-dom": "^19",
     "typescript": "^5",
     "eslint": "^9",
-    "eslint-config-next": "15.1.7",
+    "eslint-config-next": "latest",
     "tailwindcss": "^3.4.1",
     "postcss": "^8",
     "autoprefixer": "^10.0.1"

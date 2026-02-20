@@ -11,6 +11,13 @@ const nextConfig = {
             { protocol: 'https', hostname: 'picsum.photos' },
         ],
     },
+
+    // Bundle the yt-dlp binary with all API functions on Vercel
+    experimental: {
+        outputFileTracingIncludes: {
+            '/api/**': ['./bin/yt-dlp'],
+        },
+    },
 };
 
 export default nextConfig;
