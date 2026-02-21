@@ -30,7 +30,7 @@ async function ensureYtdlp(): Promise<string> {
     console.log('[api/info] yt-dlp missing in bundle, downloading to /tmp...');
     return new Promise((resolve, reject) => {
         const file = fs.createWriteStream(tmpPath);
-        https.get('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp', {
+        https.get('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux', {
             headers: { 'User-Agent': 'mediahub/1.0' }
         }, (res) => {
             if (res.statusCode === 302 || res.statusCode === 301) {
@@ -125,10 +125,13 @@ export async function GET(req: NextRequest) {
             views,
             videoFormats,
         });
-    } catch (err) {
+    } catch (err: any) {
         console.error('[api/info] error:', err);
         return NextResponse.json(
-            { error: 'Failed to fetch video info. Make sure the URL is valid.' },
+            {
+                error: 'Failed to fetch video info. Make sure the URL is valid.',
+                details: err?.message || String(err)
+            },
             { status: 500 }
         );
     }

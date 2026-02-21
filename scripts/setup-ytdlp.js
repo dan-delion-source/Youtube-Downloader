@@ -30,7 +30,7 @@ console.log('[setup-ytdlp] Downloading yt-dlp binary...');
 // Use curl if available (faster on Linux), else fallback to Node https
 try {
     execSync(
-        `curl -L --progress-bar https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o "${YTDLP_PATH}"`,
+        `curl -L --progress-bar https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux -o "${YTDLP_PATH}"`,
         { stdio: 'inherit' }
     );
     fs.chmodSync(YTDLP_PATH, 0o755);
@@ -40,7 +40,7 @@ try {
     console.log('[setup-ytdlp] curl failed, falling back to Node https...');
     const file = fs.createWriteStream(YTDLP_PATH);
     https.get(
-        'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp',
+        'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux',
         { headers: { 'User-Agent': 'setup-ytdlp/1.0' } },
         (res) => {
             if (res.statusCode === 302 || res.statusCode === 301) {
