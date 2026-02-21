@@ -2,14 +2,52 @@ import { NextRequest, NextResponse } from 'next/server';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import fs from 'fs';
+import https from 'https';
 
 const execFileAsync = promisify(execFile);
 
-// Use YTDLP_PATH env var (local dev pointing to system install),
-// otherwise fall back to the binary downloaded into ./bin/ at build time (Vercel).
-const YTDLP =
-    process.env.YTDLP_PATH ||
-    path.join(process.cwd(), 'bin', 'yt-dlp');
+// Helper to reliably find or download yt-dlp on Vercel
+async function ensureYtdlp(): Promise<string> {
+    if (process.env.YTDLP_PATH) return process.env.YTDLP_PATH;
+
+    // 1. Check if it exists in the Vercel bundled ./bin directory
+    const bundledPath = path.join(process.cwd(), 'bin', 'yt-dlp');
+    if (fs.existsSync(bundledPath)) {
+        try {
+            fs.accessSync(bundledPath, fs.constants.X_OK);
+            return bundledPath;
+        } catch {
+            // It exists but isn't executable? Try to chmod it
+            try { fs.chmodSync(bundledPath, 0o755); return bundledPath; } catch { }
+        }
+    }
+
+    // 2. If missing (common on Vercel if outputFileTracing fails), download it to /tmp
+    const tmpPath = '/tmp/yt-dlp';
+    if (fs.existsSync(tmpPath)) return tmpPath;
+
+    console.log('[api/info] yt-dlp missing in bundle, downloading to /tmp...');
+    return new Promise((resolve, reject) => {
+        const file = fs.createWriteStream(tmpPath);
+        https.get('https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp', {
+            headers: { 'User-Agent': 'mediahub/1.0' }
+        }, (res) => {
+            if (res.statusCode === 302 || res.statusCode === 301) {
+                https.get(res.headers.location!, (res2) => {
+                    res2.pipe(file);
+                    file.on('finish', () => { file.close(); fs.chmodSync(tmpPath, 0o755); resolve(tmpPath); });
+                });
+            } else {
+                res.pipe(file);
+                file.on('finish', () => { file.close(); fs.chmodSync(tmpPath, 0o755); resolve(tmpPath); });
+            }
+        }).on('error', (err) => {
+            fs.unlinkSync(tmpPath);
+            reject(err);
+        });
+    });
+}
 
 export async function GET(req: NextRequest) {
     const url = req.nextUrl.searchParams.get('url');
@@ -18,7 +56,10 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const { stdout } = await execFileAsync(YTDLP, [
+        const ytdlpPath = await ensureYtdlp();
+        console.log('[api/info] using yt-dlp at:', ytdlpPath);
+
+        const { stdout } = await execFileAsync(ytdlpPath, [
             '--dump-json',
             '--no-playlist',
             url,
