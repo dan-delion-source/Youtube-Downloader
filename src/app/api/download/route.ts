@@ -56,21 +56,34 @@ export async function GET(req: NextRequest) {
     const proc = spawn(YTDLP, args);
 
     // Convert Node.js stream to Web ReadableStream
+    let isClosed = false;
     const readable = new ReadableStream({
         start(controller) {
             proc.stdout.on('data', (chunk: Buffer) => {
-                controller.enqueue(new Uint8Array(chunk));
+                if (isClosed) return;
+                try {
+                    controller.enqueue(new Uint8Array(chunk));
+                } catch (e) {
+                    isClosed = true;
+                }
             });
             proc.stdout.on('end', () => {
-                controller.close();
+                if (isClosed) return;
+                try {
+                    controller.close();
+                } catch (e) { }
+                isClosed = true;
             });
             proc.stderr.on('data', (chunk: Buffer) => {
                 // yt-dlp writes progress to stderr — just log it
-                console.log('[yt-dlp stderr]', chunk.toString());
+                // console.log('[yt-dlp stderr]', chunk.toString());
             });
             proc.on('error', (err) => {
-                console.error('[yt-dlp process error]', err);
-                controller.error(err);
+                if (isClosed) return;
+                try {
+                    controller.error(err);
+                } catch (e) { }
+                isClosed = true;
             });
             proc.on('close', (code) => {
                 if (code !== 0) {
@@ -79,6 +92,7 @@ export async function GET(req: NextRequest) {
             });
         },
         cancel() {
+            isClosed = true;
             proc.kill();
         },
     });

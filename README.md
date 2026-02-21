@@ -157,9 +157,16 @@ src/
 
 ---
 
-## ⚠️ Legal Notice
+## ⚠️ Legal Notice and Disclaimer
 
-This tool is intended **for legally permitted content only** — videos you own, content licensed for download, or videos where the creator has granted permission. Downloading copyrighted content without permission may violate YouTube's Terms of Service and applicable copyright law. Use responsibly.
+This project, **MediaHub (Youtube-Downloader)**, is provided **strictly for educational and personal use only**. 
+
+1. **No Copyright Infringement Intended:** This tool must not be used to download copyrighted material without the explicit permission of the copyright owner. You may only download content that is in the public domain, licensed under Creative Commons, or content for which you own the copyright.
+2. **User Responsibility:** By using this tool, you agree that you are solely responsible for ensuring your downloads comply with the Terms of Service of the respective platforms (e.g., YouTube) and all applicable local, national, and international copyright laws.
+3. **No Affiliation:** This project is not affiliated with, endorsed by, or sponsored by YouTube, Google, or any other media platform.
+4. **No Liability:** The creators and maintainers of this repository are not responsible or liable for any misuse of the software or any copyright violations committed by the user.
+
+Any use of this tool that violates the legal rights of content creators is strictly prohibited.
 
 ---
 
