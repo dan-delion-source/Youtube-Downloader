@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
     title: 'MediaHub — Premium Media Downloader',
-    description: 'Paste a media URL and instantly get MP4 or MP3 download options. Supports YouTube, Vimeo, Twitter, and Instagram.',
+    description: 'Paste a media URL and instantly get MP4 or MP3 download options. Supports YouTube Content Only',
     keywords: ['media downloader', 'youtube downloader', 'mp4', 'mp3', 'video download'],
 };
 

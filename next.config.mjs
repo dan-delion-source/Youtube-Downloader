@@ -14,7 +14,7 @@ const nextConfig = {
 
     // Bundle the yt-dlp binary with all API functions on Vercel
     outputFileTracingIncludes: {
-        '/api/**': ['./bin/yt-dlp'],
+        '/api/**/*': ['./bin/yt-dlp'],
     },
 };
 
